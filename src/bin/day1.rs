@@ -1,6 +1,6 @@
 use adventofcode2023::read_input;
 
-fn process(input: &String, letters: bool) -> i32 {
+fn process(input: &str, letters: bool) -> i32 {
     let words = [
         "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
     ];
@@ -26,10 +26,10 @@ fn process(input: &String, letters: bool) -> i32 {
 
             if number != -1 {
                 if first == -1 {
-                    first = number as i32;
+                    first = number;
                 }
 
-                last = number as i32;
+                last = number;
             }
         }
 
@@ -39,11 +39,11 @@ fn process(input: &String, letters: bool) -> i32 {
     result
 }
 
-fn part1(input: &String) -> i32 {
+fn part1(input: &str) -> i32 {
     process(input, false)
 }
 
-fn part2(input: &String) -> i32 {
+fn part2(input: &str) -> i32 {
     process(input, true)
 }
 
