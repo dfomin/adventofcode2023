@@ -76,7 +76,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_day3_part1() {
+    fn test_day4_part1() {
         let input = "
             Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
             Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
@@ -91,7 +91,7 @@ mod tests {
     }
 
     #[test]
-    fn test_day3_part2() {
+    fn test_day4_part2() {
         let input = "
             Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
             Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
