@@ -23,71 +23,42 @@ fn field_size(lines: &Vec<(char, usize)>) -> (usize, usize, usize, usize) {
     )
 }
 
-fn dfs(field: &mut Vec<Vec<i32>>, x: usize, y: usize) {
-    if field[y][x] != 0 {
-        return;
-    }
-    field[y][x] = 2;
-    if x > 0 {
-        dfs(field, x - 1, y);
-    }
-    if y > 0 {
-        dfs(field, x, y - 1);
-    }
-    if x < field[0].len() - 1 {
-        dfs(field, x + 1, y);
-    }
-    if y < field.len() - 1 {
-        dfs(field, x, y + 1);
-    }
-}
-
 fn process(lines: &Vec<(char, usize)>) -> usize {
     let (width, height, mut x, mut y) = field_size(&lines);
-    let mut field = vec![vec![0; width]; height];
+    let mut points = vec![];
+    let mut addition = 0;
     for (direction, step) in lines {
         let (mut next_x, mut next_y) = (x, y);
         match direction {
-            'R' => next_x = x + step,
-            'L' => next_x = x - step,
-            'U' => next_y = y - step,
-            'D' => next_y = y + step,
+            'R' => {
+                next_x = x + step;
+            }
+            'L' => {
+                next_x = x - step;
+            }
+            'U' => {
+                next_y = y - step;
+            }
+            'D' => {
+                next_y = y + step;
+            }
             _ => panic!("Unexpected"),
         }
-        while x != next_x || y != next_y {
-            field[y][x] = 1;
-
-            if next_x > x {
-                x += 1;
-            } else if next_x < x {
-                x -= 1;
-            } else if next_y > y {
-                y += 1;
-            } else if next_y < y {
-                y -= 1;
-            }
-        }
+        addition += step;
+        x = next_x;
+        y = next_y;
+        points.push((next_x, next_y));
     }
-    for i in 0..field.len() {
-        dfs(&mut field, 0, i);
-        dfs(&mut field, width - 1, i);
+    let mut area1 = 0;
+    let mut area2 = 0;
+    for i in 0..points.len() {
+        area1 += points[i].0 * points[(i + 1) % points.len()].1;
+        area2 += points[i].0 * points[(points.len() + i - 1) % points.len()].1;
     }
-    for i in 0..field[0].len() {
-        dfs(&mut field, i, 0);
-        dfs(&mut field, i, height - 1);
-    }
-    for line in &field {
-        println!(
-            "{}",
-            line.iter()
-                .map(|x| if *x == 1 { '#' } else { '.' })
-                .collect::<String>()
-        );
-    }
-    field
-        .into_iter()
-        .map(|x| x.into_iter().filter(|y| *y != 2).count())
-        .sum()
+    (area1.max(area2) - area1.min(area2)) / 2
+        + (addition - points.len()) / 2
+        + (points.len() - 4) / 2
+        + 3
 }
 
 fn part1(input: &str) -> usize {
@@ -114,7 +85,7 @@ fn part2(input: &str) -> usize {
             '3' => 'U',
             _ => panic!("Unexpected"),
         };
-        let steps = usize::from_str_radix(&color[1..color.len() - 1], 16).unwrap();
+        let steps = usize::from_str_radix(&color[..color.len() - 1], 16).unwrap();
         lines.push((direction, steps));
     }
     process(&lines)
