@@ -252,11 +252,11 @@ mod tests {
     ";
 
     #[test]
-    fn test_day19_part1() {
+    fn test_day20_part1() {
         assert_eq!(part1(INPUT1), 32000000);
         assert_eq!(part1(INPUT2), 11687500);
     }
 
     #[test]
-    fn test_day19_part2() {}
+    fn test_day20_part2() {}
 }
