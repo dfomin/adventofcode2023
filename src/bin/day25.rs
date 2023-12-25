@@ -1,12 +1,9 @@
 use rand::Rng;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use adventofcode2023::read_input;
 
-fn parse(
-    input: &str,
-    skips: Vec<(String, String)>,
-) -> (HashMap<String, usize>, HashMap<String, Vec<String>>) {
+fn parse(input: &str) -> (HashMap<String, usize>, HashMap<String, Vec<String>>) {
     let mut vertices = HashMap::new();
     let mut edges = vec![];
     for line in input.trim().lines() {
@@ -23,30 +20,10 @@ fn parse(
         edge_map.insert(vertex.clone(), Vec::new());
     }
     for edge in edges {
-        let mut is_skip = false;
-        for skip in &skips {
-            if skip.0 == edge.0 && skip.1 == edge.1 || skip.0 == edge.1 && skip.1 == edge.0 {
-                is_skip = true;
-            }
-        }
-        if is_skip {
-            continue;
-        }
         edge_map.get_mut(edge.0).unwrap().push(edge.1.to_string());
         edge_map.get_mut(edge.1).unwrap().push(edge.0.to_string());
     }
     (vertices, edge_map)
-}
-
-fn dfs(visited: &mut HashSet<String>, edges: &HashMap<String, Vec<String>>, vertex: String) {
-    if visited.contains(&vertex) {
-        return;
-    }
-
-    visited.insert(vertex.clone());
-    for target in &edges[&vertex] {
-        dfs(visited, edges, target.to_string());
-    }
 }
 
 fn merge(
@@ -61,14 +38,10 @@ fn merge(
         }
     }
 
-    let i = rand::thread_rng().gen_range(0..vertices.len());
-    let mut j = i;
-    while j == i {
-        j = rand::thread_rng().gen_range(0..vertices.len());
-    }
-
-    let first = vertices.keys().skip(i).next().unwrap().clone();
-    let second = vertices.keys().skip(j).next().unwrap().clone();
+    let i = rand::thread_rng().gen_range(0..edges.len());
+    let first = edges.keys().skip(i).next().unwrap().clone();
+    let j = rand::thread_rng().gen_range(0..edges[&first].len());
+    let second = edges[&first][j].clone();
     let value = vertices.remove(&second).unwrap();
     *vertices.get_mut(&first).unwrap() += value;
     let to_update = edges.remove(&second).unwrap();
@@ -84,28 +57,14 @@ fn merge(
 }
 
 fn part1(input: &str) -> usize {
-    let (vertices, edges) = parse(
-        input,
-        vec![
-            ("kfr".to_string(), "vkp".to_string()),
-            ("bff".to_string(), "rhk".to_string()),
-            ("qpp".to_string(), "vnm".to_string()),
-        ],
-    );
-    // loop {
-    //     let mut vertices = vertices.clone();
-    //     let mut edges = edges.clone();
-    //     if let Some(value) = merge(&mut vertices, &mut edges) {
-    //         return value;
-    //     }
-    // }
-    let mut visited = HashSet::new();
-    dfs(
-        &mut visited,
-        &edges,
-        vertices.keys().next().unwrap().to_string(),
-    );
-    visited.len() * (vertices.len() - visited.len())
+    let (vertices, edges) = parse(input);
+    loop {
+        let mut vertices = vertices.clone();
+        let mut edges = edges.clone();
+        if let Some(value) = merge(&mut vertices, &mut edges) {
+            return value;
+        }
+    }
 }
 
 fn part2(input: &str) -> usize {
